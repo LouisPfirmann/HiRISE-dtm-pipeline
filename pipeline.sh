@@ -49,11 +49,18 @@ reduce from=../work_PSP_003956_1430/PSP_003956_1430_RED.mos_hijitreged.norm.cub 
 # --- 4. seed stereo, uncontrolled -------------------------------------------
 # Purpose: not a DTM — its dense disparity becomes the match file for the
 # bundle adjustment in step 5. (A conventional sparse-IP bundle_adjust was
-# tried first and produced too few matches on this low-contrast pair.)
+# tried first and produced too few matches on this low-contrast pair; the
+# tri stage was then re-run with --num-matches-from-disparity to export
+# dense matches instead.)
 parallel_stereo --alignment-method affineepipolar --stereo-algorithm asp_mgm \
   --subpixel-mode 9 --ip-per-tile 500 --individually-normalize \
   left_1m.cub right_1m.cub runc/run \
   --corr-seed-mode 1 --sgm-collar-size 256 --threads 16
+parallel_stereo --alignment-method affineepipolar --stereo-algorithm asp_mgm \
+  --subpixel-mode 9 --ip-per-tile 500 --individually-normalize \
+  --num-matches-from-disparity 20000 \
+  left_1m.cub right_1m.cub runc/run \
+  --corr-seed-mode 1 --sgm-collar-size 256 --threads 16 --entry-point 5
 
 # --- 5. dense-match bundle adjustment ----------------------------------------
 # Median reprojection error after this: 0.3-0.7 px.
