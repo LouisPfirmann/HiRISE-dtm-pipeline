@@ -1,0 +1,15 @@
+common valid cells: 473,817 (99% of our DTM)
+raw vertical bias (ours - official): +29.60 m (datum ties differ)
+coregistration (Nuth & Kaab 2011): horizontal shift (-58.3 E, +32.9 N) m = 67.0 m, vertical +32.57 m
+after coregistration:
+  median |dz| 10.88 m
+  RMS 13.30 m
+  68th pct |dz| 14.49 m, 95th 25.12 m
+after also removing best-fit plane (tilt 6.25 m/km):
+  median |dz| 1.40 m
+  RMS 2.18 m
+  68th pct |dz| 1.99 m, 95th 4.37 m
+slope (4 m baseline):
+  area > 20%:  ours 30.8%   official 38.4%
+  median:      ours 14.0%   official 16.4%
+  p95:         ours 41.6%   official 44.3%
