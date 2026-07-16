@@ -1,0 +1,6 @@
+work*/
+stereo/
+edr/
+validation/scratch/
+*.cub
+__pycache__/
