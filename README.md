@@ -22,7 +22,7 @@ any HiRISE stereo pair into a DTM with meter-class vertical precision. The
 demonstration case is the *Juncture of branches of Dao Vallis*
 (PSP_003468_1430 + PSP_003956_1430, −36.86°N 90.27°E), 39 km from our
 mission zone. The downstream terrain assessment lives in
-[dao-vallis-descend](https://github.com/LouisPfirmann/dao-vallis-descend).
+[Dao-Vallis-Descend](https://github.com/LouisPfirmann/Dao-Vallis-Descend).
 
 ## Result
 
