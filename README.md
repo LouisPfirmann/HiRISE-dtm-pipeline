@@ -172,6 +172,8 @@ validated against an official product.
 
 ```
 pipeline.sh              full command chain, annotated (a record, not an installer)
+setup.sh                 toolchain install: micromamba + ISIS 8.3 + ASP 3.7 + data areas
+AGENTS.md                operating notes for reproducing on a new pair (incl. failure table)
 datum_tie.py             sphere → MOLA-areoid datum tie (uv script)
 hirise_dtm_analysis.py   slope statistics, map figure, point-cloud export (uv script)
 validate_harmakhis.py    comparison vs the official USGS DTM (uv script)
@@ -188,7 +190,11 @@ validation/
 ```
 
 Python scripts are single-file [uv](https://docs.astral.sh/uv/) scripts —
-`uv run <script>`, no environment setup.
+`uv run <script>`, no environment setup. To run the full chain on a new
+pair: [`setup.sh`](setup.sh) once, adapt the header of
+[`pipeline.sh`](pipeline.sh) per [`AGENTS.md`](AGENTS.md), then
+`bash pipeline.sh 2>&1 | tee run.log` — it runs unattended (~25 min
+compute on 16 threads, plus downloads).
 
 ## Data credits & license
 
