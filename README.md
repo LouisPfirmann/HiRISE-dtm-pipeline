@@ -75,6 +75,18 @@ pipeline's DTM reads lower slopes than the official product (30.8 % vs
 kernel smooths. **Treat slope statistics from this pipeline as lower
 bounds on steepness.**
 
+**Can the absolute error be fixed by registering to MOLA?** Tested
+([`mola_tie.py`](mola_tie.py)): coregistering the Harmakhis DEM to the
+MOLA-HRSC blend and re-validating against the official DTM makes things
+*worse* — horizontal error 67 → 108 m, tilt 6.3 → 15 m/km. At 200 m/px
+the blend's own local registration error exceeds the SPICE-only error, so
+it cannot transfer horizontal control at this scale (the vertical datum
+tie is its one reliable contribution, good to ~30 m). The genuine upgrade
+path is `pc_align` against raw MOLA PEDR altimetry shots — per-shot ~1 m
+vertical, the same control source the official pipeline uses. For slope
+and descent work none of this matters: those conclusions ride on relative
+accuracy, which is the 2.2 m RMS above.
+
 **Tier 3 — scene check of the juncture DTM.** The Harmakhis run validates
 the pipeline, not this scene, so the juncture DTM is additionally checked
 against the independent HRSC h2609 strip at 125 m
@@ -152,6 +164,7 @@ datum_tie.py             sphere → MOLA-areoid datum tie (uv script)
 hirise_dtm_analysis.py   slope statistics, map figure, point-cloud export (uv script)
 validate_harmakhis.py    comparison vs the official USGS DTM (uv script)
 scene_check_hrsc.py      long-wavelength check vs HRSC 125 m strip (uv script)
+mola_tie.py              register a DEM to the MOLA-HRSC blend (uv script; see Validation)
 output/
   hirise_dtm_juncture.tif      the DTM (4 m/px, areoid heights)
   hirise_dtm_maps.png          elevation + slope figure
