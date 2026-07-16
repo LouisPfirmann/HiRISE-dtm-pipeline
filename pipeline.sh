@@ -35,8 +35,8 @@ mkdir -p edr && ( cd edr
 # the noproj'd CCDs are already coregistered to well under a pixel.
 for o in PSP_003468_1430 PSP_003956_1430; do
   mkdir -p work_$o && ( cd work_$o
-    hiedr2mosaic.py ../edr/${o}_RED4_0.IMG ../edr/${o}_RED4_1.IMG \
-                    ../edr/${o}_RED5_0.IMG ../edr/${o}_RED5_1.IMG )
+    hiedr2mosaic.py --web ../edr/${o}_RED4_0.IMG ../edr/${o}_RED4_1.IMG \
+                          ../edr/${o}_RED5_0.IMG ../edr/${o}_RED5_1.IMG )
 done
 
 # --- 3. reduce 0.5 m -> 1 m --------------------------------------------------
