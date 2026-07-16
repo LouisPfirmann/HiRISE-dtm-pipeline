@@ -4,20 +4,56 @@ Operating notes for an AI agent (or a human in a hurry) tasked with
 producing a DTM from a new HiRISE stereo pair using this repo. Everything
 below was learned by running the pipeline, including the failures.
 
-## Before you burn compute
+This file is loaded as trusted instructions by agent harnesses. It is
+written accordingly: every check is a programmatic data fetch, and every
+expensive, irreversible, or quality-tradeoff decision routes to your
+user instead of being made silently.
 
-1. **Check whether the DTM already exists.** Search the observation ID at
-   `uahirise.org/dtm` and the PDS DTM cumulative index. If an official DTM
-   exists, download it and stop — do not reproduce it except to validate.
-2. **Confirm it is a real stereo pair** (`uahirise.org/stereo`, or the
-   "stereo pair" field on the observation page). You want two observations
-   with a roll-angle separation giving ~15–35° convergence.
-3. **Check image contrast first.** Pull both browse JPEGs and look at the
-   dynamic range over the terrain of interest. Bland dust (this repo's
-   demonstration pair, I/F contrast ~0.01) means: sparse matching will
-   starve, 1 m stereo will have holes, and you should plan for the 2 m /
-   9×9-census fallback from the start. High-contrast terrain can likely
-   run finer than this repo's settings.
+## Decision flow
+
+```mermaid
+flowchart TD
+    A[DTM wanted for a HiRISE observation] --> B{Official DTM exists?<br/>grep obs ID in DTMCUMINDEX.TAB}
+    B -- yes --> C[ASK USER:<br/>official product exists —<br/>use it, or reproduce to validate?]
+    C -- use official --> D[download DTEEC, done]
+    C -- reproduce --> E
+    B -- no --> E{Confirmed stereo pair,<br/>roll separation ~15–35°?}
+    E -- no --> F[ASK USER: no usable stereo geometry —<br/>report nearby alternatives, stop]
+    E -- yes --> G{Contrast check<br/>on browse JPEGs}
+    G -- low --> H[ASK USER: expect holes, 2 m fallback,<br/>~30 m effective resolution — proceed?]
+    G -- adequate --> I
+    H -- proceed --> I{Toolchain present?}
+    I -- no --> J[ASK USER: setup.sh downloads<br/>~5–20 GB — confirm budget]
+    J --> K
+    I -- yes --> K[adapt pipeline.sh header<br/>per table below]
+    K --> L[bash pipeline.sh 2>&1 &#124; tee run.log]
+    L --> M{Stage failed?}
+    M -- yes --> N[consult failure table below;<br/>if unlisted: report log excerpt to user,<br/>do NOT loop blind retries]
+    N --> L
+    M -- no --> O[validate: datum_tie, scene check,<br/>official-DTM comparison if one exists nearby]
+    O --> P[report with the lower-bound<br/>slope caveat attached]
+```
+
+## Pre-flight checks (all scriptable)
+
+1. **Does the DTM already exist?**
+   ```sh
+   curl -s https://www.uahirise.org/PDS/INDEX/DTMCUMINDEX.TAB | grep <OBS_ID>
+   ```
+   A hit means an official product exists — route to the user before
+   reproducing work that can be downloaded.
+2. **Is it a real stereo pair?** The observation page lists the stereo
+   partner; convergence comes from the two roll angles (target ~15–35°).
+   If geometry is missing or degenerate, stop and report alternatives.
+3. **Contrast check.** Browse JPEGs live at a predictable URL:
+   ```sh
+   curl -sO https://hirise-pds.lpl.arizona.edu/PDS/EXTRAS/RDR/<PHASE>/ORB_<XXXXX00_XXXXX99>/<OBS_ID>/<OBS_ID>_RED.browse.jpg
+   ```
+   Inspect the terrain of interest (or compute the local standard
+   deviation). Bland dust — this repo's demonstration pair, I/F contrast
+   ~0.01 — means sparse matching starves and 1 m stereo will have holes;
+   surface that quality tradeoff to the user *before* burning compute,
+   and plan the 2 m / 9×9-census fallback from the start.
 
 ## Setup
 
