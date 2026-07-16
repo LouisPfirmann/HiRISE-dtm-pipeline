@@ -78,8 +78,14 @@ vs 30.5 % / 13.9 %). The 9×9 census window on 2 m pixels acts as a
 low-pass filter — the DTM is the true surface at an effective ground
 resolution of ~25–30 m, sampled at 4 m. Relief and broad slopes are
 preserved (surface RMS 2.2 m above); features sharper than ~30 m are
-rounded. **Treat slope statistics from this pipeline as lower bounds on
-steepness, with the deficit concentrated at sub-30 m spatial scales.**
+rounded. Per cell, smoothing regresses slope toward the window mean in
+both directions — sub-30 m steep features read shallower, and sub-30 m
+benches inside steep walls read steeper (they inherit the wall's slope) —
+with an additional one-way loss where aspect varies inside the window,
+since opposing gradients cancel vectorially before the slope magnitude is
+taken. **Aggregate slope statistics are therefore lower bounds on
+steepness, and the DTM resolves neither hazards nor refuges smaller than
+~30 m.**
 
 **Can the absolute error be fixed by registering to MOLA?** Tested
 ([`mola_tie.py`](mola_tie.py)): coregistering the Harmakhis DEM to the
